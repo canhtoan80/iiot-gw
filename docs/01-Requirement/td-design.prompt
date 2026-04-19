@@ -1,0 +1,140 @@
+Bạn là chuyên gia kiến trúc hệ thống IIoT cấp độ industrial-grade.
+
+Tôi cần bạn phân tích và thiết kế một hệ thống phần mềm cho IIoT Gateway với các yêu cầu sau:
+
+## 1. Bối cảnh hệ thống
+
+* Phần cứng: Industrial PC (x86)
+* Hệ điều hành: Linux (Ubuntu Server hoặc tương đương)
+* Framework chính: .NET (ưu tiên .NET 8 trở lên)
+* Gateway hoạt động như một edge device trong hệ thống IIoT
+
+## 2. Giao tiếp thiết bị (Field Layer)
+
+* Giao thức: Modbus
+
+  * Modbus RTU (RS-485)
+  * Modbus TCP
+* Yêu cầu:
+
+  * Polling nhiều thiết bị song song
+  * Mapping register → data model
+  * Xử lý timeout, retry, CRC error
+  * Cấu hình động (configurable device list)
+
+## 3. Giao tiếp uplink (Cloud Layer)
+
+* Giao thức: MQTT Sparkplug B
+* Yêu cầu:
+
+  * Publish theo chuẩn Sparkplug B (NBIRTH, DBIRTH, NDATA, DDATA, NDEATH)
+  * State management (online/offline)
+  * Session persistence
+  * QoS phù hợp (1 hoặc 2)
+  * TLS support
+
+## 4. Yêu cầu hệ thống
+
+* Chạy dạng service trên Linux (systemd)
+* High reliability:
+
+  * Auto reconnect (Modbus & MQTT)
+  * Watchdog / health check
+* Logging:
+
+  * Structured logging (Serilog hoặc tương đương)
+* Cấu hình:
+
+  * File config (JSON/YAML)
+  * Có thể reload runtime (hot reload config nếu có thể)
+* Khả năng mở rộng:
+
+  * Hỗ trợ thêm protocol trong tương lai (OPC-UA, HTTP…)
+
+## 5. Yêu cầu phân tích & thiết kế (QUAN TRỌNG)
+
+Hãy cung cấp:
+
+### (A) Kiến trúc tổng thể
+
+* Sơ đồ logical (các module chính)
+* Phân tách layer:
+
+  * Device layer
+  * Processing layer
+  * Communication layer
+
+### (B) Thiết kế module chi tiết
+
+* Modbus Service:
+
+  * Threading model
+  * Polling strategy
+* Data Processing:
+
+  * Cache / buffer
+  * Change detection (publish only when changed?)
+* MQTT Sparkplug:
+
+  * State machine (birth/death)
+  * Topic structure
+
+### (C) Thiết kế concurrency
+
+* Sử dụng:
+
+  * async/await
+  * Task / Channel / Queue
+* Cách tránh:
+
+  * deadlock
+  * race condition
+
+### (D) Reliability design
+
+* Retry strategy (exponential backoff)
+* Network failure handling
+* Device offline detection
+
+### (E) Deployment & runtime
+
+* systemd service file mẫu
+* Docker (có nên dùng không? ưu/nhược)
+* Logging & monitoring
+
+### (F) Security
+
+* MQTT TLS
+* Certificate management
+* Firewall / port control
+
+### (G) Performance considerations
+
+* Khi có:
+
+  * 50–200 thiết bị Modbus
+* Bottleneck ở đâu?
+* Cách scale
+
+### (H) Đề xuất công nghệ cụ thể
+
+* Thư viện .NET cho:
+
+  * Modbus
+  * MQTT Sparkplug
+* IPC (nếu cần)
+
+## 6. Yêu cầu output
+
+* Trình bày rõ ràng, có cấu trúc
+* Có sơ đồ (ASCII diagram nếu cần)
+* Ưu tiên thực tế production, không lý thuyết chung chung
+* Nếu có trade-off, hãy phân tích rõ
+
+## 7. Bonus (nếu có thể)
+
+* Skeleton project structure (.NET solution)
+* Naming convention cho service/module
+* Gợi ý best practice thực tế
+
+Hãy trả lời với mindset: hệ thống này sẽ được deploy ngoài hiện trường công nghiệp, yêu cầu chạy ổn định 24/7.

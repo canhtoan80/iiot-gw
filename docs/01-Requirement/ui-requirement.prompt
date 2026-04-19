@@ -1,0 +1,230 @@
+Bạn là chuyên gia UI/UX cho hệ thống công nghiệp (IIoT, SCADA, Industrial Gateway).
+
+Tôi cần bạn thiết kế UI/UX cho một hệ thống IIoT Gateway với yêu cầu production (industrial-grade), ưu tiên tính ổn định, rõ ràng và dễ vận hành ngoài hiện trường.
+
+## 1. Bối cảnh hệ thống
+
+* Gateway chạy trên:
+
+  * PC (x86)
+  * Linux OS
+* Backend: .NET (ASP.NET Core)
+* Giao thức:
+
+  * Field: Modbus RTU / TCP
+  * Uplink: MQTT Sparkplug B
+* Người dùng:
+
+  * Kỹ sư vận hành
+  * Kỹ thuật bảo trì (không phải developer)
+
+## 2. Mục tiêu UI
+
+UI phải đảm bảo:
+
+* Quan sát trạng thái hệ thống nhanh (3–5 giây)
+* Dễ vận hành trong môi trường công nghiệp
+* Không gây lỗi do thao tác sai
+* Hoạt động ổn định với dữ liệu lớn (50–200 devices)
+
+---
+
+## 3. Yêu cầu thiết kế (QUAN TRỌNG)
+
+### (A) Nguyên tắc UI/UX công nghiệp
+
+* Visibility:
+
+  * Hiển thị rõ trạng thái:
+
+    * Gateway
+    * MQTT connection
+    * Device status
+* Deterministic:
+
+  * Hành vi rõ ràng, không mơ hồ
+* Fail-safe:
+
+  * Validate input mạnh (không cho config sai)
+* Minimal:
+
+  * Không thiết kế rối, ưu tiên bảng và trạng thái
+
+---
+
+### (B) Danh sách màn hình bắt buộc
+
+#### 1. Dashboard
+
+* Trạng thái tổng:
+
+  * Gateway (running/stopped)
+  * MQTT (connected/disconnected)
+  * Số device OK / lỗi
+* System resource:
+
+  * CPU / RAM
+* Hiển thị cảnh báo (warning/error)
+
+---
+
+#### 2. Device Management (Modbus)
+
+* Danh sách thiết bị:
+
+  * IP / COM
+  * Slave ID
+  * Status
+* Chức năng:
+
+  * Add / Edit / Delete
+  * Test connection
+* Hiển thị:
+
+  * latency
+  * error count
+
+---
+
+#### 3. Data Monitor (Realtime)
+
+* Hiển thị dữ liệu realtime:
+
+  * dạng table hoặc chart
+* Highlight khi dữ liệu thay đổi
+* Filter theo device
+
+---
+
+#### 4. MQTT / Sparkplug
+
+* Config:
+
+  * broker
+  * TLS
+* Hiển thị:
+
+  * trạng thái kết nối
+  * last publish
+* Bonus:
+
+  * xem payload (debug)
+
+---
+
+#### 5. System Configuration
+
+* Network config
+* Time sync (NTP)
+* Log level
+
+---
+
+#### 6. Log Viewer
+
+* Filter:
+
+  * level (info/debug/error)
+  * module (Modbus/MQTT)
+* Search
+* Export log
+
+---
+
+#### 7. Maintenance
+
+* Restart service
+* Reboot system
+* Update software
+* Có confirm dialog cho action nguy hiểm
+
+---
+
+### (C) UX & Interaction Design
+
+* Realtime update:
+
+  * Không reload trang
+  * Sử dụng WebSocket hoặc SignalR
+* Màu sắc:
+
+  * Xanh: OK
+  * Đỏ: lỗi
+  * Vàng: cảnh báo
+  * Xám: offline
+* Layout:
+
+  * Sidebar navigation
+  * Main content dạng card + table
+
+---
+
+### (D) Performance & Scalability
+
+* UI phải hoạt động tốt với:
+
+  * 50–200 Modbus devices
+* Không bị lag khi update realtime
+* Tối ưu render (virtualization nếu cần)
+
+---
+
+### (E) Security & User Control
+
+* Phân quyền:
+
+  * Admin / Operator
+* Không cho user thường sửa config quan trọng
+
+---
+
+### (F) Tính năng nâng cao (nếu có)
+
+* Alarm / Alert system
+* Import / Export config (JSON)
+* Bulk operation (thêm nhiều device)
+* Auto reconnect status hiển thị rõ
+
+---
+
+## 4. Yêu cầu output từ AI
+
+Hãy cung cấp:
+
+### (1) UI Architecture
+
+* Sơ đồ các màn hình
+* Navigation flow
+
+### (2) Wireframe (ASCII hoặc mô tả chi tiết)
+
+* Dashboard
+* Device page
+* MQTT page
+
+### (3) Component design
+
+* Table
+* Status indicator
+* Log viewer
+
+### (4) Công nghệ đề xuất
+
+* Blazor vs React (so sánh)
+* Có nên dùng SignalR không
+
+### (5) Best practices thực tế
+
+* Những lỗi UI phổ biến trong hệ thống công nghiệp
+* Cách tránh
+
+---
+
+## 5. Yêu cầu quan trọng
+
+* Ưu tiên thực tế triển khai production
+* Tránh mô tả chung chung
+* Nếu có trade-off → phải phân tích rõ
+* Thiết kế hướng tới hệ thống chạy 24/7 ngoài hiện trường
+
+Hãy trả lời như đang thiết kế cho một sản phẩm thương mại thực sự.
