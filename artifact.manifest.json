@@ -1,0 +1,50 @@
+{
+  "project": "EMS IIoT Gateway (Tier 2A)",
+  "version": "1.1.0-beta",
+  "build_info": {
+    "runtime": ".NET 8.0",
+    "target_platforms": ["linux-x64", "linux-arm64"],
+    "configurations": ["Debug", "Release"]
+  },
+  "artifacts": [
+    {
+      "name": "EMS.Gateway.Host",
+      "type": "executable",
+      "path": "src/EMS.Gateway.Host/bin/Release/net8.0/linux-x64/publish/",
+      "description": "Main gateway firmware service."
+    },
+    {
+      "name": "LocalBuffer.db",
+      "type": "database",
+      "path": "/var/lib/ems-gateway/buffer.db",
+      "description": "SQLite storage for local data buffering."
+    },
+    {
+      "name": "devices.json",
+      "type": "configuration",
+      "path": "/etc/ems-gateway/devices.json",
+      "description": "Device templates and register definitions."
+    }
+  ],
+  "dependencies": {
+    "system": ["mosquitto", "sqlite3", "chrony", "step-ca"],
+    "nuget": [
+      "MQTTnet",
+      "Eclipse.Tahu.Protobuf",
+      "NCalc2",
+      "FluentModbus",
+      "Microsoft.Data.Sqlite"
+    ]
+  },
+  "deployment": {
+    "method": "systemd",
+    "services": ["ems-gateway.service", "mosquitto.service"],
+    "mounts": [
+      {
+        "type": "tmpfs",
+        "path": "/dev/shm/ems-buffer",
+        "size": "64M"
+      }
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+Analyze git diff --cached, generate a short commit message (< 50 chars), then commit and push to origin main
