@@ -1,33 +1,47 @@
 {
   "project": "EMS IIoT Gateway (Tier 2A)",
-  "version": "1.1.0-beta",
+  "version": "1.2.0-stable",
   "build_info": {
     "runtime": ".NET 8.0",
     "target_platforms": ["linux-x64", "linux-arm64"],
-    "configurations": ["Debug", "Release"]
+    "configurations": ["Debug", "Release"],
+    "packaging": ".deb"
   },
   "artifacts": [
     {
-      "name": "EMS.Gateway.Host",
+      "name": "ems-gateway",
       "type": "executable",
-      "path": "src/EMS.Gateway.Host/bin/Release/net8.0/linux-x64/publish/",
-      "description": "Main gateway firmware service."
+      "path": "/usr/bin/ems-gateway",
+      "description": "Main gateway firmware service (Self-contained binary)."
     },
     {
-      "name": "LocalBuffer.db",
+      "name": "buffer.db",
       "type": "database",
       "path": "/var/lib/ems-gateway/buffer.db",
-      "description": "SQLite storage for local data buffering."
+      "description": "SQLite storage for local data buffering (72h retention)."
+    },
+    {
+      "name": "appsettings.json",
+      "type": "configuration",
+      "path": "/etc/ems-gateway/appsettings.json",
+      "description": "Global gateway configuration."
     },
     {
       "name": "devices.json",
       "type": "configuration",
       "path": "/etc/ems-gateway/devices.json",
-      "description": "Device templates and register definitions."
+      "description": "Modbus/BACnet device templates and register definitions."
     }
   ],
   "dependencies": {
-    "system": ["mosquitto", "sqlite3", "chrony", "step-ca"],
+    "system": [
+      "mosquitto",
+      "sqlite3",
+      "chrony",
+      "modemmanager",
+      "wireguard",
+      "usbipd-win (dev-only)"
+    ],
     "nuget": [
       "MQTTnet",
       "Eclipse.Tahu.Protobuf",
@@ -38,13 +52,20 @@
   },
   "deployment": {
     "method": "systemd",
-    "services": ["ems-gateway.service", "mosquitto.service"],
+    "services": ["ems-gateway.service", "mosquitto.service", "emqx.service (G1/G2)"],
     "mounts": [
       {
         "type": "tmpfs",
         "path": "/dev/shm/ems-buffer",
-        "size": "64M"
+        "size": "256M"
       }
-    ]
+    ],
+    "ports": {
+      "mosquitto": 1883,
+      "emqx_internal": 1884,
+      "emqx_external": 8883,
+      "admin_ui": 8080,
+      "prometheus": 9090
+    }
   }
 }

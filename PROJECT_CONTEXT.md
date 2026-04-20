@@ -33,10 +33,17 @@ The **EMS IIoT Gateway (Tier 2A)** is a high-performance industrial gateway desi
 
 ### Hardware Assumptions
 - **Target OS:** Linux (Ubuntu/Debian) on Industrial PCs (x86) or ARM SBCs.
-- **Watchdog:** Mandatory hardware watchdog timer integration.
+- **Watchdog:** Mandatory hardware watchdog timer integration (`/dev/watchdog`).
 - **NTP:** Continuous time synchronization with drift monitoring.
 
-## 3. Assumptions & Known Limitations
+## 3. Development & Testing Environment
+For development and simulation on Windows machines:
+- **Environment:** Windows 10/11 with **WSL2** (Ubuntu 22.04).
+- **Containerization:** **Docker Desktop** for hosting infrastructure services (Mosquitto, EMQX).
+- **Hardware Simulation:** **usbipd-win** to pass physical USB-to-RS485 adapters into WSL2/Docker.
+- **Networking:** Localhost mapping between Windows and WSL2 for MQTT communication (Port 1883).
+
+## 4. Assumptions & Known Limitations
 
 ### Assumptions
 - **Network Stability:** The field network (RS485/LAN) is assumed to be electrically noisy; retry policies and CRC checks are mandatory.
@@ -46,3 +53,4 @@ The **EMS IIoT Gateway (Tier 2A)** is a high-performance industrial gateway desi
 - **Buffer Capacity:** Local buffer is limited to 72 hours by default.
 - **Protocol Scope:** Initial release focuses on Modbus; BACnet and others are phased.
 - **RS485 Half-Duplex:** Bus arbitration is software-managed via a priority write queue.
+- **WSL2 Watchdog:** Hardware watchdog is typically not accessible in WSL2; software watchdog must be used for testing.
