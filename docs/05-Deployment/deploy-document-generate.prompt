@@ -1,0 +1,247 @@
+Bạn là một nhóm chuyên gia gồm:
+
+* DevOps Engineer (CI/CD, packaging, deployment)
+* Linux System Engineer (systemd, performance, reliability)
+* Network Engineer (4G, VPN, routing, firewall)
+* Security Engineer (TLS, certificate, hardening)
+* Field Application Engineer (triển khai thực địa, RS-485, Modbus)
+* QA/Reliability Engineer (test trong điều kiện thực tế)
+
+Nhiệm vụ của bạn: xây dựng tài liệu **Deployment Guide chuẩn production (industrial-grade)** cho hệ thống IIoT Gateway.
+
+---
+
+# 1. Bối cảnh hệ thống
+
+## Phần cứng:
+
+* Industrial PC (x86)
+
+## Hệ điều hành:
+
+* Linux (Ubuntu Server hoặc tương đương)
+
+## Phần mềm:
+
+* Framework chính: .NET (>= .NET 8)
+* Chạy dạng service (systemd)
+
+## Giao thức:
+
+* Field: Modbus RTU (RS-485), Modbus TCP
+* Uplink: MQTT Sparkplug B (TLS)
+
+## Yêu cầu:
+
+* Hệ thống chạy 24/7
+* Deploy nhiều gateway ngoài hiện trường
+* Mạng không ổn định (4G / NAT / private network)
+
+---
+
+# 2. Mục tiêu tài liệu
+
+Tạo tài liệu deploy để:
+
+* Kỹ sư có thể triển khai gateway từ đầu
+* Đảm bảo hệ thống hoạt động ổn định
+* Có khả năng debug khi xảy ra lỗi
+* Có thể scale lên nhiều thiết bị
+
+---
+
+# 3. Yêu cầu nội dung (BẮT BUỘC CHI TIẾT)
+
+## (A) Kiến trúc deployment tổng thể
+
+* Sơ đồ:
+
+  * Gateway ↔ Field devices ↔ Cloud
+* Các thành phần:
+
+  * Service .NET
+  * MQTT broker
+  * Network (4G / LAN / VPN)
+* Luồng dữ liệu
+
+---
+
+## (B) Packaging & Build (DevOps)
+
+* Cách build:
+
+  * .NET publish (self-contained vs framework-dependent)
+* Đóng gói:
+
+  * .deb package hoặc Docker (so sánh và đề xuất)
+* Versioning strategy
+
+---
+
+## (C) Cài đặt trên Linux (System Engineer)
+
+* Các bước:
+
+  * Cài runtime (.NET nếu cần)
+  * Copy binary
+* Tạo file systemd:
+
+  * auto start
+  * restart on failure
+* Log:
+
+  * journald / file
+  * log rotation
+
+---
+
+## (D) Cấu hình Network (Network Engineer)
+
+* Ethernet / WiFi / 4G:
+
+  * cấu hình cơ bản
+* SIM M2M:
+
+  * APN
+* VPN:
+
+  * khi nào cần
+  * cấu hình cơ bản
+* Firewall:
+
+  * port cần mở (MQTT TLS)
+* NAT / outbound connection
+
+---
+
+## (E) Cấu hình MQTT Sparkplug (Communication)
+
+* Broker config:
+
+  * host / port / TLS
+* Certificate:
+
+  * cách cài đặt
+* Topic & state:
+
+  * NBIRTH / DBIRTH / NDATA / DDATA / NDEATH
+* Reconnect strategy
+
+---
+
+## (F) Cấu hình Modbus (Field Engineer)
+
+* RS-485:
+
+  * wiring (A/B)
+  * termination resistor
+* Thông số:
+
+  * baudrate
+  * parity
+* Debug:
+
+  * test connection
+  * xử lý timeout / CRC error
+
+---
+
+## (G) Security Hardening (Security Engineer)
+
+* Disable service không cần
+* SSH:
+
+  * key-based auth
+* Firewall rules
+* Certificate management
+* Update & patch OS
+
+---
+
+## (H) Reliability & Fault Handling (System + QA)
+
+* Mất mạng:
+
+  * MQTT reconnect
+* Device lỗi:
+
+  * retry strategy
+* Mất điện:
+
+  * auto restart
+* Watchdog / health check
+
+---
+
+## (I) Monitoring & Logging
+
+* Log:
+
+  * cấu trúc log (level, module)
+* Monitoring:
+
+  * CPU / RAM / disk
+* Remote debug:
+
+  * cách truy cập log từ xa
+
+---
+
+## (J) OTA / Update Strategy (DevOps)
+
+* Cập nhật phần mềm:
+
+  * thủ công vs OTA
+* Rollback khi lỗi
+* Version control
+
+---
+
+## (K) Checklist triển khai thực tế (FAE)
+
+* Trước khi deploy:
+
+  * kiểm tra network
+  * kiểm tra wiring
+* Sau khi deploy:
+
+  * verify data lên cloud
+* Checklist debug nhanh
+
+---
+
+## (L) Test plan (QA)
+
+* Test:
+
+  * mất mạng
+  * mất điện
+  * thiết bị Modbus lỗi
+* Load test:
+
+  * 50–200 devices
+
+---
+
+# 4. Yêu cầu output
+
+* Trình bày dạng tài liệu rõ ràng, có cấu trúc
+* Có step-by-step hướng dẫn
+* Có command mẫu (Linux)
+* Có config mẫu (systemd, MQTT, Modbus)
+* Có sơ đồ ASCII nếu cần
+* Phân tích trade-off (Docker vs native, TLS vs non-TLS…)
+
+---
+
+# 5. Yêu cầu quan trọng
+
+* Không trả lời chung chung
+* Phải mang tính thực tế triển khai ngoài hiện trường
+* Ưu tiên stability, reliability hơn “đẹp” hoặc “lý thuyết”
+* Viết như tài liệu dùng cho team kỹ thuật triển khai thật
+
+---
+
+Hãy trả lời với mindset:
+“Hệ thống này sẽ được deploy ngoài môi trường công nghiệp, mạng không ổn định, và phải chạy liên tục 24/7.”
